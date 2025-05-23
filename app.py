@@ -26,6 +26,21 @@ def simulate_degradation(capacity_kWh, dod_percent, eol_percent, total_cycles):
 # Run the simulation
 cycles, usable_cap, soh = simulate_degradation(capacity_kWh, dod_percent, eol_percent, cycles_input)
 
+# ---
+## Output
+---
+
+# Calculate and display usable capacity at start and end of life
+initial_usable_capacity = usable_cap[0]
+end_of_life_capacity = usable_cap[-1] # Last value in the usable_cap array
+
+st.write(f"**Usable Capacity at Start:** {initial_usable_capacity:.2f} kWh (based on {dod_percent}% DOD and 105% initial SOH)")
+st.write(f"**End of Life Capacity:** {end_of_life_capacity:.2f} kWh (based on {eol_percent}% EOL threshold)")
+
+# ---
+## Capacity Degradation Graph
+---
+
 # Plotting
 fig, ax1 = plt.subplots(figsize=(10, 5))
 
@@ -34,12 +49,18 @@ ax1.set_xlabel("Cycle Count")
 ax1.set_ylabel("Usable Capacity (kWh)", color=color)
 ax1.plot(cycles, usable_cap, label="Usable Capacity", color=color)
 ax1.tick_params(axis='y', labelcolor=color)
+ax1.grid(True, linestyle='--', alpha=0.7)
 
 ax2 = ax1.twinx()
 color = 'tab:orange'
 ax2.set_ylabel("State of Health (%)", color=color)
 ax2.plot(cycles, soh * 100, '--', label="State of Health", color=color)
 ax2.tick_params(axis='y', labelcolor=color)
+
+# Add title and legend
+plt.title("Battery Usable Capacity and State of Health Over Cycles")
+fig.legend(loc="upper right", bbox_to_anchor=(1,1), bbox_transform=ax1.transAxes)
+
 
 fig.tight_layout()
 st.pyplot(fig)
