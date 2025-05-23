@@ -16,9 +16,10 @@ cycles_input = st.slider("Max Cycle Count", min_value=1000, max_value=10000, ste
 def simulate_degradation(capacity_kWh, dod_percent, eol_percent, total_cycles):
     dod = dod_percent / 100
     eol = eol_percent / 100
-    initial_soh = 1.05
+    initial_soh = 1.05 # Initial State of Health (SOH) is 105%
 
     cycles = np.arange(0, total_cycles + 1)
+    # Degradation model: SOH decreases from initial_soh to eol over total_cycles
     soh = initial_soh - (initial_soh - eol) * (cycles / total_cycles) ** 1.3
     usable_capacity = soh * capacity_kWh * dod
     return cycles, usable_capacity, soh
@@ -26,18 +27,20 @@ def simulate_degradation(capacity_kWh, dod_percent, eol_percent, total_cycles):
 # Run the simulation
 cycles, usable_cap, soh = simulate_degradation(capacity_kWh, dod_percent, eol_percent, cycles_input)
 
-# ---
+---
 ## Output
 ---
 
 # Calculate and display usable capacity at start and end of life
+# Usable capacity at start is the first value in the usable_cap array
 initial_usable_capacity = usable_cap[0]
-end_of_life_capacity = usable_cap[-1] # Last value in the usable_cap array
+# Usable capacity at end of life is the last value in the usable_cap array
+end_of_life_capacity = usable_cap[-1] 
 
 st.write(f"**Usable Capacity at Start:** {initial_usable_capacity:.2f} kWh (based on {dod_percent}% DOD and 105% initial SOH)")
 st.write(f"**End of Life Capacity:** {end_of_life_capacity:.2f} kWh (based on {eol_percent}% EOL threshold)")
 
-# ---
+---
 ## Capacity Degradation Graph
 ---
 
@@ -59,10 +62,11 @@ ax2.tick_params(axis='y', labelcolor=color)
 
 # Add title and legend
 plt.title("Battery Usable Capacity and State of Health Over Cycles")
+# Positioning the legend outside the plot to avoid overlap
 fig.legend(loc="upper right", bbox_to_anchor=(1,1), bbox_transform=ax1.transAxes)
 
 
-fig.tight_layout()
+fig.tight_layout() # Adjust layout to prevent labels from overlapping
 st.pyplot(fig)
 
 st.caption("This simulation assumes a typical LFP cell degradation curve with slight overcapacity at start-of-life.")
