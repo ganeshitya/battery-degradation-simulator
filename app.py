@@ -27,9 +27,11 @@ def simulate_degradation(capacity_kWh, dod_percent, eol_percent, total_cycles):
 # Run the simulation
 cycles, usable_cap, soh = simulate_degradation(capacity_kWh, dod_percent, eol_percent, cycles_input)
 
----
-## Output
----
+# ---
+# Output Section
+# ---
+st.markdown("---") # Horizontal rule for separation
+st.subheader("Output") # Using subheader for a clear heading
 
 # Calculate and display usable capacity at start and end of life
 # Usable capacity at start is the first value in the usable_cap array
@@ -40,9 +42,11 @@ end_of_life_capacity = usable_cap[-1]
 st.write(f"**Usable Capacity at Start:** {initial_usable_capacity:.2f} kWh (based on {dod_percent}% DOD and 105% initial SOH)")
 st.write(f"**End of Life Capacity:** {end_of_life_capacity:.2f} kWh (based on {eol_percent}% EOL threshold)")
 
----
-## Capacity Degradation Graph
----
+# ---
+# Capacity Degradation Graph Section
+# ---
+st.markdown("---") # Horizontal rule for separation
+st.subheader("Capacity Degradation Graph") # Using subheader for a clear heading
 
 # Plotting
 fig, ax1 = plt.subplots(figsize=(10, 5))
