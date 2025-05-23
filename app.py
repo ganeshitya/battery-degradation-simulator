@@ -2,14 +2,14 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Page configuration
+# Page config
 st.set_page_config(page_title="Lithium Battery Life Simulator", layout="centered")
 
-# Title and description
+# Title
 st.title("🔋 Lithium Battery Degradation Simulator")
 st.write("Simulate how usable capacity of an LFP lithium-ion battery fades over cycles based on Depth of Discharge and End of Life assumptions.")
 
-# User inputs
+# Inputs
 capacity_kWh = st.number_input("Battery Pack Capacity (kWh)", min_value=0.1, value=5.0, step=0.1)
 dod_percent = st.slider("Depth of Discharge (%)", min_value=10, max_value=100, value=80)
 eol_percent = st.slider("End of Life Threshold (%)", min_value=60, max_value=100, value=80)
@@ -19,8 +19,7 @@ cycles_input = st.slider("Max Cycle Count", min_value=1000, max_value=10000, ste
 def simulate_degradation(capacity_kWh, dod_percent, eol_percent, total_cycles):
     dod = dod_percent / 100
     eol = eol_percent / 100
-    initial_soh = 1.05  # Initial SOH at 105%
-
+    initial_soh = 1.05
     cycles = np.arange(0, total_cycles + 1)
     soh = initial_soh - (initial_soh - eol) * (cycles / total_cycles) ** 1.3
     usable_capacity = soh * capacity_kWh * dod
@@ -29,19 +28,75 @@ def simulate_degradation(capacity_kWh, dod_percent, eol_percent, total_cycles):
 # Run simulation
 cycles, usable_cap, soh = simulate_degradation(capacity_kWh, dod_percent, eol_percent, cycles_input)
 
-# Output section
-st.markdown("---")
-st.subheader("Output")
-
 initial_usable_capacity = usable_cap[0]
 end_of_life_capacity = usable_cap[-1]
 
-st.write(f"**Usable Capacity at Start:** {initial_usable_capacity:.2f} kWh (based on {dod_percent}% DOD and 105% initial SOH)")
-st.write(f"**End of Life Capacity:** {end_of_life_capacity:.2f} kWh (based on {eol_percent}% EOL threshold)")
-
-# Capacity degradation graph
+# ---
+# Card-style Output Section
+# ---
 st.markdown("---")
-st.subheader("Capacity Degradation Graph")
+st.subheader("📊 Simulation Summary")
+
+# Custom CSS for cards
+st.markdown("""
+<style>
+.card-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 20px;
+}
+.card {
+    flex: 1;
+    background-color: #f1f3f6;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    text-align: center;
+}
+.card h3 {
+    font-size: 1.2rem;
+    color: #444;
+}
+.card .icon {
+    font-size: 2rem;
+}
+.card .value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #0a58ca;
+}
+.card .subtitle {
+    font-size: 0.9rem;
+    color: #777;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Output as cards
+st.markdown(f"""
+<div class="card-container">
+    <div class="card">
+        <div class="icon">🔋</div>
+        <h3>Usable Capacity at Start</h3>
+        <div class="value">{initial_usable_capacity:.2f} kWh</div>
+        <div class="subtitle">Based on 105% SOH</div>
+    </div>
+    <div class="card">
+        <div class="icon">⚠️</div>
+        <h3>End of Life Capacity</h3>
+        <div class="value">{end_of_life_capacity:.2f} kWh</div>
+        <div class="subtitle">Threshold: {eol_percent}% EOL</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ---
+# Plotting Section
+# ---
+st.markdown("---")
+st.subheader("📉 Capacity Degradation Graph")
 
 fig, ax1 = plt.subplots(figsize=(10, 5))
 
